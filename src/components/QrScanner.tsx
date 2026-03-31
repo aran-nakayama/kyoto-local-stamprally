@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
 interface QrScannerProps {
   onScan: (decodedText: string) => void;
+}
+
+function isAbortError(err: unknown): boolean {
+  return err instanceof DOMException && err.name === "AbortError";
 }
 
 export function QrScanner({ onScan }: QrScannerProps) {
@@ -17,41 +21,51 @@ export function QrScanner({ onScan }: QrScannerProps) {
 
   useEffect(() => {
     let cancelled = false;
-    const scanner = new Html5Qrcode("qr-reader");
-    scannerRef.current = scanner;
 
-    scanner
-      .start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          if (!startedRef.current) return;
-          startedRef.current = false;
-          scanner.stop().catch(() => {});
-          onScanRef.current(decodedText);
-        },
-        () => {}
-      )
-      .then(() => {
-        if (cancelled) {
-          scanner.stop().catch(() => {});
-        } else {
-          startedRef.current = true;
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
+    // DOMが確実にレンダリングされるのを待つ
+    const timerId = setTimeout(() => {
+      if (cancelled) return;
+
+      const scanner = new Html5Qrcode("qr-reader");
+      scannerRef.current = scanner;
+
+      scanner
+        .start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText) => {
+            if (!startedRef.current) return;
+            startedRef.current = false;
+            scanner.stop().catch(() => {});
+            onScanRef.current(decodedText);
+          },
+          () => {}
+        )
+        .then(() => {
+          if (cancelled) {
+            scanner.stop().catch(() => {});
+          } else {
+            startedRef.current = true;
+          }
+        })
+        .catch((err: unknown) => {
+          // AbortError はコンポーネントのアンマウント時に発生する正常な挙動
+          if (cancelled || isAbortError(err)) return;
           setError(
             "カメラを起動できませんでした。カメラの使用を許可してください。"
           );
-        }
-      });
+        });
+    }, 100);
 
     return () => {
       cancelled = true;
-      if (startedRef.current) {
-        startedRef.current = false;
+      clearTimeout(timerId);
+      const scanner = scannerRef.current;
+      if (scanner) {
+        // start中でもstop中でも安全にクリーンアップ
         scanner.stop().catch(() => {});
+        startedRef.current = false;
+        scannerRef.current = null;
       }
     };
   }, []);
