@@ -29,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" className={`${notoSansJP.variable} antialiased`}>
-      <body className="font-sans" style={{ paddingBottom: "64px" }}>
+    <html lang="ja" className={`${notoSansJP.variable} antialiased`} suppressHydrationWarning>
+      <body className="font-sans" style={{ paddingBottom: "64px" }} suppressHydrationWarning>
         {children}
         <BottomNav />
       </body>
