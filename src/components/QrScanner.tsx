@@ -7,14 +7,20 @@ interface QrScannerProps {
   onScan: (decodedText: string) => void;
 }
 
-function isAbortError(err: unknown): boolean {
-  return err instanceof DOMException && err.name === "AbortError";
+/** scanner.stop() を安全に呼ぶヘルパー（同期例外もPromise拒否も両方捕捉） */
+function safeStop(scanner: Html5Qrcode | null): void {
+  if (!scanner) return;
+  try {
+    scanner.stop().catch(() => {});
+  } catch {
+    // "Cannot stop, scanner is not running or paused" 等の同期例外を無視
+  }
 }
 
 export function QrScanner({ onScan }: QrScannerProps) {
   const [error, setError] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
-  const startedRef = useRef(false);
+  const stateRef = useRef<"idle" | "starting" | "running" | "stopped">("idle");
 
   const onScanRef = useRef(onScan);
   onScanRef.current = onScan;
@@ -28,29 +34,33 @@ export function QrScanner({ onScan }: QrScannerProps) {
 
       const scanner = new Html5Qrcode("qr-reader");
       scannerRef.current = scanner;
+      stateRef.current = "starting";
 
       scanner
         .start(
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 250, height: 250 } },
           (decodedText) => {
-            if (!startedRef.current) return;
-            startedRef.current = false;
-            scanner.stop().catch(() => {});
+            // 既に停止済みなら何もしない
+            if (stateRef.current !== "running") return;
+            stateRef.current = "stopped";
+            safeStop(scanner);
             onScanRef.current(decodedText);
           },
           () => {}
         )
         .then(() => {
           if (cancelled) {
-            scanner.stop().catch(() => {});
+            stateRef.current = "stopped";
+            safeStop(scanner);
           } else {
-            startedRef.current = true;
+            stateRef.current = "running";
           }
         })
         .catch((err: unknown) => {
-          // AbortError はコンポーネントのアンマウント時に発生する正常な挙動
-          if (cancelled || isAbortError(err)) return;
+          if (cancelled) return;
+          // AbortError はアンマウント時の正常な挙動
+          if (err instanceof DOMException && err.name === "AbortError") return;
           setError(
             "カメラを起動できませんでした。カメラの使用を許可してください。"
           );
@@ -60,13 +70,12 @@ export function QrScanner({ onScan }: QrScannerProps) {
     return () => {
       cancelled = true;
       clearTimeout(timerId);
-      const scanner = scannerRef.current;
-      if (scanner) {
-        // start中でもstop中でも安全にクリーンアップ
-        scanner.stop().catch(() => {});
-        startedRef.current = false;
-        scannerRef.current = null;
+      // 既に停止済み（スキャン成功時等）なら二重停止しない
+      if (stateRef.current !== "stopped") {
+        stateRef.current = "stopped";
+        safeStop(scannerRef.current);
       }
+      scannerRef.current = null;
     };
   }, []);
 
