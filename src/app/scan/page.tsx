@@ -17,7 +17,8 @@ export default function ScanPage() {
     (text: string) => {
       try {
         const url = new URL(text);
-        const match = url.pathname.match(/^\/stamp\/(.+)$/);
+        // basePath付き・なし両方に対応
+        const match = url.pathname.match(/(?:\/kyoto-local-stamprally)?\/stamp\/(.+)$/);
         if (match) {
           router.push(`/stamp/${match[1]}`);
           return;
