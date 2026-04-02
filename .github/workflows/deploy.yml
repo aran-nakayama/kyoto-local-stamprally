@@ -25,6 +25,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          NEXT_PUBLIC_GOOGLE_SHEET_CSV_URL: https://docs.google.com/spreadsheets/d/e/2PACX-1vRVFc46Zmy9mtmTdYi7vGt9AwuHq946Lj6He7i_WC2344g8AcIfV6svmXGKR04t1cSAkhTG2niTZJX5/pub?gid=766728197&single=true&output=csv
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out

@@ -151,14 +151,14 @@ export function getCachedTranslations(): SheetTranslations | null {
 }
 
 export async function fetchShopsFromSheet(
-  sheetId: string
+  sheetUrl: string
 ): Promise<{ shops: Shop[]; translations: SheetTranslations } | null> {
   // キャッシュチェック
   const cache = getCache();
   if (cache) return { shops: cache.data, translations: cache.translations };
 
   try {
-    const url = `https://docs.google.com/spreadsheets/d/e/${sheetId}/pub?gid=0&single=true&output=csv`;
+    const url = sheetUrl;
     const res = await fetch(url);
     if (!res.ok) return null;
 

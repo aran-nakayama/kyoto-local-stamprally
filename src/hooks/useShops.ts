@@ -5,14 +5,14 @@ import { Shop } from "@/lib/types";
 import { shops as defaultShops } from "@/data/shops";
 import { fetchShopsFromSheet } from "@/lib/sheets";
 
-const SHEET_ID = process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID || "";
+const SHEET_CSV_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEET_CSV_URL || "";
 
 export function useShops(): { shops: Shop[]; isLoaded: boolean } {
   const [shops, setShops] = useState<Shop[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    if (!SHEET_ID) {
+    if (!SHEET_CSV_URL) {
       // Google Sheets未設定の場合はローカルデータを使用
       setShops(defaultShops);
       setIsLoaded(true);
@@ -21,7 +21,7 @@ export function useShops(): { shops: Shop[]; isLoaded: boolean } {
 
     let cancelled = false;
 
-    fetchShopsFromSheet(SHEET_ID).then((result) => {
+    fetchShopsFromSheet(SHEET_CSV_URL).then((result) => {
       if (cancelled) return;
       if (result) {
         setShops(result.shops);
