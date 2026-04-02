@@ -6,11 +6,11 @@ import "leaflet/dist/leaflet.css";
 import { Shop, ShopCategory } from "@/lib/types";
 import { useI18n } from "@/contexts/I18nContext";
 import { useShopTranslation } from "@/hooks/useShopTranslation";
-import Link from "next/link";
 
 interface ShopMapProps {
   shops: Shop[];
   acquiredShopIds: Set<string>;
+  onSelectShop: (shop: Shop) => void;
 }
 
 const markerColors: Record<ShopCategory, string> = {
@@ -29,7 +29,7 @@ function createIcon(category: ShopCategory, acquired: boolean) {
   });
 }
 
-export function ShopMap({ shops, acquiredShopIds }: ShopMapProps) {
+export function ShopMap({ shops, acquiredShopIds, onSelectShop }: ShopMapProps) {
   const { t } = useI18n();
   const { translateShop } = useShopTranslation();
 
@@ -65,12 +65,12 @@ export function ShopMap({ shops, acquiredShopIds }: ShopMapProps) {
                   {categoryLabel[shop.category]}
                   {acquired ? ` ✅ ${t.map.acquired}` : ""}
                 </p>
-                <Link
-                  href={`/shops/${shop.id}`}
+                <button
+                  onClick={() => onSelectShop(rawShop)}
                   className="text-blue-600 hover:underline text-xs"
                 >
                   {t.map.viewDetail}
-                </Link>
+                </button>
               </div>
             </Popup>
           </Marker>

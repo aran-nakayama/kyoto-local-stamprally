@@ -2,11 +2,11 @@
 
 import { Shop, ShopCategory } from "@/lib/types";
 import { useShopTranslation } from "@/hooks/useShopTranslation";
-import Link from "next/link";
 
 interface StampSlotProps {
   shop: Shop;
   acquired: boolean;
+  onSelect: (shop: Shop) => void;
 }
 
 const categoryEmoji: Record<ShopCategory, string> = {
@@ -15,12 +15,12 @@ const categoryEmoji: Record<ShopCategory, string> = {
   restaurant: "🍽",
 };
 
-export function StampSlot({ shop: rawShop, acquired }: StampSlotProps) {
+export function StampSlot({ shop: rawShop, acquired, onSelect }: StampSlotProps) {
   const { translateShop } = useShopTranslation();
   const shop = translateShop(rawShop);
 
   return (
-    <Link href={`/shops/${shop.id}`} className="flex flex-col items-center gap-1">
+    <button onClick={() => onSelect(rawShop)} className="flex flex-col items-center gap-1">
       <div
         className={`w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
           acquired
@@ -41,6 +41,6 @@ export function StampSlot({ shop: rawShop, acquired }: StampSlotProps) {
       >
         {shop.name}
       </span>
-    </Link>
+    </button>
   );
 }

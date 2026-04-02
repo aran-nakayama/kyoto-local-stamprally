@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Shop, ShopCategory } from "@/lib/types";
 import { useI18n } from "@/contexts/I18nContext";
 import { useShopTranslation } from "@/hooks/useShopTranslation";
@@ -8,6 +7,7 @@ import { useShopTranslation } from "@/hooks/useShopTranslation";
 interface ShopCardProps {
   shop: Shop;
   acquired: boolean;
+  onSelect: (shop: Shop) => void;
 }
 
 const categoryColor: Record<ShopCategory, string> = {
@@ -16,7 +16,7 @@ const categoryColor: Record<ShopCategory, string> = {
   restaurant: "bg-green-100 text-green-800",
 };
 
-export function ShopCard({ shop: rawShop, acquired }: ShopCardProps) {
+export function ShopCard({ shop: rawShop, acquired, onSelect }: ShopCardProps) {
   const { t } = useI18n();
   const { translateShop } = useShopTranslation();
   const shop = translateShop(rawShop);
@@ -28,9 +28,9 @@ export function ShopCard({ shop: rawShop, acquired }: ShopCardProps) {
   };
 
   return (
-    <Link
-      href={`/shops/${shop.id}`}
-      className="block bg-card rounded-xl border border-border p-4 hover:shadow-md transition-shadow"
+    <button
+      onClick={() => onSelect(rawShop)}
+      className="block w-full text-left bg-card rounded-xl border border-border p-4 hover:shadow-md transition-shadow"
     >
       <div className="flex items-start gap-3">
         <div
@@ -55,6 +55,6 @@ export function ShopCard({ shop: rawShop, acquired }: ShopCardProps) {
           <p className="text-xs text-muted mt-1">{shop.address}</p>
         </div>
       </div>
-    </Link>
+    </button>
   );
 }

@@ -3,16 +3,18 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { ShopCard } from "@/components/ShopCard";
+import { ShopDetailModal } from "@/components/ShopDetailModal";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { useStamps } from "@/hooks/useStamps";
 import { useShops } from "@/hooks/useShops";
 import { useI18n } from "@/contexts/I18nContext";
-import { ShopCategory } from "@/lib/types";
+import { Shop, ShopCategory } from "@/lib/types";
 
 type FilterOption = "all" | ShopCategory;
 
 export default function ShopsPage() {
   const [filter, setFilter] = useState<FilterOption>("all");
+  const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
   const { shops } = useShops();
   const { hasStamp, isLoaded } = useStamps(shops);
   const { t } = useI18n();
@@ -34,10 +36,19 @@ export default function ShopsPage() {
               key={shop.id}
               shop={shop}
               acquired={isLoaded ? hasStamp(shop.id) : false}
+              onSelect={setSelectedShop}
             />
           ))}
         </div>
       </div>
+
+      {selectedShop && (
+        <ShopDetailModal
+          shop={selectedShop}
+          acquired={isLoaded ? hasStamp(selectedShop.id) : false}
+          onClose={() => setSelectedShop(null)}
+        />
+      )}
     </>
   );
 }

@@ -3,10 +3,15 @@
 import { useStamps } from "@/hooks/useStamps";
 import { useShops } from "@/hooks/useShops";
 import { useI18n } from "@/contexts/I18nContext";
+import { Shop } from "@/lib/types";
 import { StampSlot } from "./StampSlot";
 import { ProgressBar } from "./ProgressBar";
 
-export function StampGrid() {
+interface StampGridProps {
+  onSelectShop: (shop: Shop) => void;
+}
+
+export function StampGrid({ onSelectShop }: StampGridProps) {
   const { shops } = useShops();
   const { hasStamp, progress, isComplete, isLoaded } = useStamps(shops);
   const { t } = useI18n();
@@ -31,6 +36,7 @@ export function StampGrid() {
             key={shop.id}
             shop={shop}
             acquired={isLoaded ? hasStamp(shop.id) : false}
+            onSelect={onSelectShop}
           />
         ))}
       </div>
