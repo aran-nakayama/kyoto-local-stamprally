@@ -2,11 +2,13 @@
 
 import { shops } from "@/data/shops";
 import { useStamps } from "@/hooks/useStamps";
+import { useI18n } from "@/contexts/I18nContext";
 import { StampSlot } from "./StampSlot";
 import { ProgressBar } from "./ProgressBar";
 
 export function StampGrid() {
   const { hasStamp, progress, isComplete, isLoaded } = useStamps();
+  const { t } = useI18n();
 
   return (
     <div className="space-y-6">
@@ -15,9 +17,9 @@ export function StampGrid() {
       {isComplete && (
         <div className="bg-gradient-to-r from-accent/10 to-primary/10 border border-accent/30 rounded-xl p-4 text-center">
           <p className="text-2xl mb-1">🎉</p>
-          <p className="font-bold text-foreground">コンプリート！</p>
+          <p className="font-bold text-foreground">{t.progress.complete}</p>
           <p className="text-sm text-muted mt-1">
-            全てのスタンプを集めました！おめでとうございます！
+            {t.progress.completeMessage}
           </p>
         </div>
       )}

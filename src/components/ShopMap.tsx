@@ -5,6 +5,8 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { shops } from "@/data/shops";
 import { ShopCategory } from "@/lib/types";
+import { useI18n } from "@/contexts/I18nContext";
+import { useShopTranslation } from "@/hooks/useShopTranslation";
 import Link from "next/link";
 
 interface ShopMapProps {
@@ -27,13 +29,16 @@ function createIcon(category: ShopCategory, acquired: boolean) {
   });
 }
 
-const categoryLabel: Record<ShopCategory, string> = {
-  cafe: "カフェ",
-  bar: "バー",
-  restaurant: "レストラン",
-};
-
 export function ShopMap({ acquiredShopIds }: ShopMapProps) {
+  const { t } = useI18n();
+  const { translateShop } = useShopTranslation();
+
+  const categoryLabel: Record<ShopCategory, string> = {
+    cafe: t.category.cafe,
+    bar: t.category.bar,
+    restaurant: t.category.restaurant,
+  };
+
   return (
     <MapContainer
       center={[35.0116, 135.7681]}
@@ -44,7 +49,8 @@ export function ShopMap({ acquiredShopIds }: ShopMapProps) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {shops.map((shop) => {
+      {shops.map((rawShop) => {
+        const shop = translateShop(rawShop);
         const acquired = acquiredShopIds.has(shop.id);
         return (
           <Marker
@@ -57,13 +63,13 @@ export function ShopMap({ acquiredShopIds }: ShopMapProps) {
                 <p className="font-bold">{shop.name}</p>
                 <p className="text-gray-500">
                   {categoryLabel[shop.category]}
-                  {acquired ? " ✅ 獲得済み" : ""}
+                  {acquired ? ` ✅ ${t.map.acquired}` : ""}
                 </p>
                 <Link
                   href={`/shops/${shop.id}`}
                   className="text-blue-600 hover:underline text-xs"
                 >
-                  詳細を見る →
+                  {t.map.viewDetail}
                 </Link>
               </div>
             </Popup>

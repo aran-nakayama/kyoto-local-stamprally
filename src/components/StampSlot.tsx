@@ -1,4 +1,7 @@
+"use client";
+
 import { Shop, ShopCategory } from "@/lib/types";
+import { useShopTranslation } from "@/hooks/useShopTranslation";
 import Link from "next/link";
 
 interface StampSlotProps {
@@ -12,7 +15,10 @@ const categoryEmoji: Record<ShopCategory, string> = {
   restaurant: "🍽",
 };
 
-export function StampSlot({ shop, acquired }: StampSlotProps) {
+export function StampSlot({ shop: rawShop, acquired }: StampSlotProps) {
+  const { translateShop } = useShopTranslation();
+  const shop = translateShop(rawShop);
+
   return (
     <Link href={`/shops/${shop.id}`} className="flex flex-col items-center gap-1">
       <div

@@ -4,20 +4,25 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { useStamps } from "@/hooks/useStamps";
+import { useI18n } from "@/contexts/I18nContext";
+import { useShopTranslation } from "@/hooks/useShopTranslation";
 import { shops } from "@/data/shops";
 import { ShopCategory } from "@/lib/types";
 
-const categoryLabel: Record<ShopCategory, string> = {
-  cafe: "カフェ",
-  bar: "バー",
-  restaurant: "レストラン",
-};
-
 export function ShopDetailClient({ id }: { id: string }) {
-  const shop = shops.find((s) => s.id === id);
+  const rawShop = shops.find((s) => s.id === id);
   const { hasStamp, isLoaded } = useStamps();
+  const { t } = useI18n();
+  const { translateShop } = useShopTranslation();
 
-  if (!shop) notFound();
+  if (!rawShop) notFound();
+  const shop = translateShop(rawShop);
+
+  const categoryLabel: Record<ShopCategory, string> = {
+    cafe: t.category.cafe,
+    bar: t.category.bar,
+    restaurant: t.category.restaurant,
+  };
 
   const acquired = isLoaded && hasStamp(shop.id);
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${shop.lat},${shop.lng}`;
@@ -45,12 +50,12 @@ export function ShopDetailClient({ id }: { id: string }) {
           </div>
           <div>
             <p className="font-bold">
-              {acquired ? "スタンプ獲得済み！" : "未獲得"}
+              {acquired ? t.shopDetail.stampAcquired : t.shopDetail.stampNotAcquired}
             </p>
             <p className="text-sm text-muted">
               {acquired
-                ? "このお店のスタンプは取得済みです"
-                : "お店でQRコードを読み取ってスタンプを獲得しよう"}
+                ? t.shopDetail.stampAcquiredDesc
+                : t.shopDetail.stampNotAcquiredDesc}
             </p>
           </div>
         </div>
@@ -58,23 +63,23 @@ export function ShopDetailClient({ id }: { id: string }) {
         {/* 店舗情報 */}
         <div className="space-y-4">
           <div>
-            <h2 className="text-sm font-medium text-muted mb-1">紹介</h2>
+            <h2 className="text-sm font-medium text-muted mb-1">{t.shopDetail.introduction}</h2>
             <p className="text-foreground">{shop.description}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h2 className="text-sm font-medium text-muted mb-1">営業時間</h2>
+              <h2 className="text-sm font-medium text-muted mb-1">{t.shopDetail.openingHours}</h2>
               <p className="text-foreground">{shop.openingHours}</p>
             </div>
             <div>
-              <h2 className="text-sm font-medium text-muted mb-1">定休日</h2>
+              <h2 className="text-sm font-medium text-muted mb-1">{t.shopDetail.closedDays}</h2>
               <p className="text-foreground">{shop.closedDays}</p>
             </div>
           </div>
 
           <div>
-            <h2 className="text-sm font-medium text-muted mb-1">住所</h2>
+            <h2 className="text-sm font-medium text-muted mb-1">{t.shopDetail.address}</h2>
             <p className="text-foreground">{shop.address}</p>
           </div>
 
@@ -84,7 +89,7 @@ export function ShopDetailClient({ id }: { id: string }) {
             rel="noopener noreferrer"
             className="block w-full text-center bg-card border border-border rounded-xl py-3 font-medium hover:bg-border/30 transition-colors"
           >
-            📍 Google Maps で開く
+            {t.shopDetail.openInGoogleMaps}
           </a>
         </div>
 
@@ -92,7 +97,7 @@ export function ShopDetailClient({ id }: { id: string }) {
           href="/shops"
           className="block text-center text-sm text-primary hover:underline"
         >
-          ← お店一覧に戻る
+          {t.shopDetail.backToList}
         </Link>
       </div>
     </>

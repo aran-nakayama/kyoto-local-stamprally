@@ -2,17 +2,13 @@
 
 import Link from "next/link";
 import { Shop, ShopCategory } from "@/lib/types";
+import { useI18n } from "@/contexts/I18nContext";
+import { useShopTranslation } from "@/hooks/useShopTranslation";
 
 interface ShopCardProps {
   shop: Shop;
   acquired: boolean;
 }
-
-const categoryLabel: Record<ShopCategory, string> = {
-  cafe: "カフェ",
-  bar: "バー",
-  restaurant: "レストラン",
-};
 
 const categoryColor: Record<ShopCategory, string> = {
   cafe: "bg-amber-100 text-amber-800",
@@ -20,7 +16,17 @@ const categoryColor: Record<ShopCategory, string> = {
   restaurant: "bg-green-100 text-green-800",
 };
 
-export function ShopCard({ shop, acquired }: ShopCardProps) {
+export function ShopCard({ shop: rawShop, acquired }: ShopCardProps) {
+  const { t } = useI18n();
+  const { translateShop } = useShopTranslation();
+  const shop = translateShop(rawShop);
+
+  const categoryLabel: Record<ShopCategory, string> = {
+    cafe: t.category.cafe,
+    bar: t.category.bar,
+    restaurant: t.category.restaurant,
+  };
+
   return (
     <Link
       href={`/shops/${shop.id}`}

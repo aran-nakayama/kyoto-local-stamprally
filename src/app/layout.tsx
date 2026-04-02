@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import { BottomNav } from "@/components/BottomNav";
+import { I18nProvider } from "@/contexts/I18nContext";
 import { SITE_NAME, SITE_DESCRIPTION } from "@/lib/constants";
 
 const notoSansJP = Noto_Sans_JP({
@@ -31,8 +32,10 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${notoSansJP.variable} antialiased`} suppressHydrationWarning>
       <body className="font-sans" style={{ paddingBottom: "64px" }} suppressHydrationWarning>
-        {children}
-        <BottomNav />
+        <I18nProvider>
+          {children}
+          <BottomNav />
+        </I18nProvider>
       </body>
     </html>
   );

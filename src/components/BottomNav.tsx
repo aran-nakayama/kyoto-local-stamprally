@@ -2,16 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const tabs = [
-  { href: "/", label: "スタンプ", icon: StampIcon },
-  { href: "/shops", label: "お店一覧", icon: ListIcon },
-  { href: "/scan", label: "スキャン", icon: CameraIcon },
-  { href: "/map", label: "マップ", icon: MapIcon },
-] as const;
+import { useI18n } from "@/contexts/I18nContext";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  if (pathname.startsWith("/admin")) return null;
+
+  const tabs = [
+    { href: "/", label: t.nav.stamps, icon: StampIcon },
+    { href: "/shops", label: t.nav.shops, icon: ListIcon },
+    { href: "/scan", label: t.nav.scan, icon: CameraIcon },
+    { href: "/map", label: t.nav.map, icon: MapIcon },
+  ] as const;
 
   return (
     <nav

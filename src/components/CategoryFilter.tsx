@@ -1,6 +1,7 @@
 "use client";
 
 import { ShopCategory } from "@/lib/types";
+import { useI18n } from "@/contexts/I18nContext";
 
 type FilterOption = "all" | ShopCategory;
 
@@ -9,14 +10,16 @@ interface CategoryFilterProps {
   onChange: (value: FilterOption) => void;
 }
 
-const options: { value: FilterOption; label: string }[] = [
-  { value: "all", label: "すべて" },
-  { value: "cafe", label: "カフェ" },
-  { value: "bar", label: "バー" },
-  { value: "restaurant", label: "レストラン" },
-];
-
 export function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
+  const { t } = useI18n();
+
+  const options: { value: FilterOption; label: string }[] = [
+    { value: "all", label: t.category.all },
+    { value: "cafe", label: t.category.cafe },
+    { value: "bar", label: t.category.bar },
+    { value: "restaurant", label: t.category.restaurant },
+  ];
+
   return (
     <div className="flex gap-2">
       {options.map((opt) => (
