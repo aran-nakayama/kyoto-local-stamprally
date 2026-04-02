@@ -21,14 +21,14 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem(LOCALE_STORAGE_KEY) as Locale | null;
     if (saved && saved in translations) {
       setLocaleState(saved);
-      document.documentElement.lang = saved === "zh" ? "zh-CN" : saved;
+      document.documentElement.lang = saved;
     }
   }, []);
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
     localStorage.setItem(LOCALE_STORAGE_KEY, newLocale);
-    document.documentElement.lang = newLocale === "zh" ? "zh-CN" : newLocale;
+    document.documentElement.lang = newLocale;
   };
 
   return (

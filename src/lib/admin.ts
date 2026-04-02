@@ -1,5 +1,4 @@
 const ADMIN_SESSION_KEY = "kyoto-stamprally-admin-session";
-// SHA-256 hash of "kyoto2024"
 const ADMIN_PASSWORD_HASH = "35ed7d1f3065da77b611ee07dfcd87127c95576f00d3d28b79e4ae7a6407fdac";
 
 async function sha256(text: string): Promise<string> {

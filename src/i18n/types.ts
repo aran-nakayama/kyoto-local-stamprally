@@ -1,4 +1,4 @@
-export type Locale = "ja" | "en" | "zh" | "ko";
+export type Locale = "ja" | "en";
 
 export interface TranslationDict {
   siteName: string;

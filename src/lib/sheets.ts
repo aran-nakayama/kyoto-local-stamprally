@@ -18,7 +18,7 @@ export interface SheetTranslation {
 
 export type SheetTranslations = Record<
   string,
-  Partial<Record<"en" | "zh" | "ko", Partial<SheetTranslation>>>
+  Partial<Record<"en", Partial<SheetTranslation>>>
 >;
 
 function parseCSVLine(line: string): string[] {
@@ -94,14 +94,14 @@ function extractTranslations(
   rows: Record<string, string>[]
 ): SheetTranslations {
   const translations: SheetTranslations = {};
-  const locales = ["en", "zh", "ko"] as const;
+  const locales = ["en"] as const;
 
   for (const row of rows) {
     const id = row["id"];
     if (!id) continue;
 
     const shopTranslations: Partial<
-      Record<"en" | "zh" | "ko", Partial<SheetTranslation>>
+      Record<"en", Partial<SheetTranslation>>
     > = {};
 
     for (const locale of locales) {
