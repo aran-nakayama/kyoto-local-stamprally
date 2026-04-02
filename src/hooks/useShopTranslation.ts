@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useI18n } from "@/contexts/I18nContext";
 import { defaultShopTranslations, ShopTranslation } from "@/i18n/shopTranslations";
+import { getCachedTranslations } from "@/lib/sheets";
 import { Shop } from "@/lib/types";
 import { Locale } from "@/i18n/types";
 
@@ -23,13 +24,16 @@ export function useShopTranslation() {
 
   const translateShop = useMemo(() => {
     const custom = getCustomTranslations();
+    const sheetTranslations = getCachedTranslations();
 
     return (shop: Shop): Shop => {
       if (locale === "ja") return shop;
 
+      // 優先順位: 管理画面カスタム > Google Sheets > デフォルト翻訳
       const customT = custom[shop.id]?.[locale];
+      const sheetT = sheetTranslations?.[shop.id]?.[locale];
       const defaultT = defaultShopTranslations[shop.id]?.[locale];
-      const merged = { ...defaultT, ...customT };
+      const merged = { ...defaultT, ...sheetT, ...customT };
 
       return {
         ...shop,

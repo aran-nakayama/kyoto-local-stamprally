@@ -1,6 +1,6 @@
-import { StampRecord } from "./types";
+import { StampRecord, Shop } from "./types";
 import { STORAGE_KEY } from "./constants";
-import { shops } from "@/data/shops";
+import { shops as defaultShops } from "@/data/shops";
 
 export function getStamps(): StampRecord[] {
   if (typeof window === "undefined") return [];
@@ -33,10 +33,10 @@ export function clearStamps(): void {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-export function getProgress(): { acquired: number; total: number } {
+export function getProgress(shops: Shop[]): { acquired: number; total: number } {
   return { acquired: getStamps().length, total: shops.length };
 }
 
-export function findShopByToken(token: string) {
-  return shops.find((s) => s.stampToken === token) ?? null;
+export function findShopByToken(token: string): Shop | null {
+  return defaultShops.find((s) => s.stampToken === token) ?? null;
 }

@@ -3,13 +3,13 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { shops } from "@/data/shops";
-import { ShopCategory } from "@/lib/types";
+import { Shop, ShopCategory } from "@/lib/types";
 import { useI18n } from "@/contexts/I18nContext";
 import { useShopTranslation } from "@/hooks/useShopTranslation";
 import Link from "next/link";
 
 interface ShopMapProps {
+  shops: Shop[];
   acquiredShopIds: Set<string>;
 }
 
@@ -29,7 +29,7 @@ function createIcon(category: ShopCategory, acquired: boolean) {
   });
 }
 
-export function ShopMap({ acquiredShopIds }: ShopMapProps) {
+export function ShopMap({ shops, acquiredShopIds }: ShopMapProps) {
   const { t } = useI18n();
   const { translateShop } = useShopTranslation();
 

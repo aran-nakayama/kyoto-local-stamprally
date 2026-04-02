@@ -2,12 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useI18n } from "@/contexts/I18nContext";
-import { getAdminShops } from "@/lib/adminShops";
+import { useShops } from "@/hooks/useShops";
 import QRCode from "qrcode";
 
 export function AdminQrCodes() {
   const { t } = useI18n();
-  const shops = getAdminShops();
+  const { shops } = useShops();
   const [baseUrl, setBaseUrl] = useState("");
 
   useEffect(() => {
@@ -17,16 +17,6 @@ export function AdminQrCodes() {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold">{t.admin.qrCodes}</h2>
-
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <label className="block text-sm font-medium text-gray-600 mb-1">Base URL</label>
-        <input
-          type="text"
-          value={baseUrl}
-          onChange={(e) => setBaseUrl(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-        />
-      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {shops.map((shop) => (

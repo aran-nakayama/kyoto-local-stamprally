@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { StampRecord } from "@/lib/types";
-import { getStamps, addStamp as addStampToStorage, hasStamp as checkHasStamp } from "@/lib/stamps";
-import { shops } from "@/data/shops";
+import { StampRecord, Shop } from "@/lib/types";
+import { getStamps, addStamp as addStampToStorage } from "@/lib/stamps";
 
-export function useStamps() {
+export function useStamps(shops: Shop[]) {
   const [stamps, setStamps] = useState<StampRecord[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 

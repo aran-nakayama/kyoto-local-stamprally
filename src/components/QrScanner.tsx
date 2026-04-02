@@ -80,7 +80,10 @@ export function QrScanner({ onScan }: QrScannerProps) {
         safeStop(scannerRef.current);
       }
       scannerRef.current = null;
-      window.removeEventListener("unhandledrejection", suppressAbort);
+      // ブラウザのAbortErrorはクリーンアップ後に非同期で発生するため、削除を遅延する
+      setTimeout(() => {
+        window.removeEventListener("unhandledrejection", suppressAbort);
+      }, 1000);
     };
   }, []);
 

@@ -5,15 +5,16 @@ import { Header } from "@/components/Header";
 import { ShopCard } from "@/components/ShopCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { useStamps } from "@/hooks/useStamps";
+import { useShops } from "@/hooks/useShops";
 import { useI18n } from "@/contexts/I18nContext";
-import { shops } from "@/data/shops";
 import { ShopCategory } from "@/lib/types";
 
 type FilterOption = "all" | ShopCategory;
 
 export default function ShopsPage() {
   const [filter, setFilter] = useState<FilterOption>("all");
-  const { hasStamp, isLoaded } = useStamps();
+  const { shops } = useShops();
+  const { hasStamp, isLoaded } = useStamps(shops);
   const { t } = useI18n();
 
   const filtered =

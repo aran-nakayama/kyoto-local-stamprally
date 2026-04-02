@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { findShopByToken } from "@/lib/stamps";
 import { useStamps } from "@/hooks/useStamps";
+import { useShops } from "@/hooks/useShops";
 import { useI18n } from "@/contexts/I18nContext";
 import { Shop } from "@/lib/types";
 
@@ -11,7 +12,8 @@ type StampResult = "success" | "already" | "invalid";
 
 export function StampClient({ token }: { token: string }) {
   const router = useRouter();
-  const { addStamp, hasStamp, isLoaded } = useStamps();
+  const { shops } = useShops();
+  const { addStamp, hasStamp, isLoaded } = useStamps(shops);
   const { t } = useI18n();
   const [result, setResult] = useState<StampResult | null>(null);
   const [shop, setShop] = useState<Shop | null>(null);

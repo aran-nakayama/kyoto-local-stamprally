@@ -1,13 +1,14 @@
 "use client";
 
-import { shops } from "@/data/shops";
 import { useStamps } from "@/hooks/useStamps";
+import { useShops } from "@/hooks/useShops";
 import { useI18n } from "@/contexts/I18nContext";
 import { StampSlot } from "./StampSlot";
 import { ProgressBar } from "./ProgressBar";
 
 export function StampGrid() {
-  const { hasStamp, progress, isComplete, isLoaded } = useStamps();
+  const { shops } = useShops();
+  const { hasStamp, progress, isComplete, isLoaded } = useStamps(shops);
   const { t } = useI18n();
 
   return (

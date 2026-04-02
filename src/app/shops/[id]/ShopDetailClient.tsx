@@ -4,16 +4,25 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { useStamps } from "@/hooks/useStamps";
+import { useShops } from "@/hooks/useShops";
 import { useI18n } from "@/contexts/I18nContext";
 import { useShopTranslation } from "@/hooks/useShopTranslation";
-import { shops } from "@/data/shops";
 import { ShopCategory } from "@/lib/types";
 
 export function ShopDetailClient({ id }: { id: string }) {
+  const { shops, isLoaded: shopsLoaded } = useShops();
   const rawShop = shops.find((s) => s.id === id);
-  const { hasStamp, isLoaded } = useStamps();
+  const { hasStamp, isLoaded } = useStamps(shops);
   const { t } = useI18n();
   const { translateShop } = useShopTranslation();
+
+  if (!shopsLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!rawShop) notFound();
   const shop = translateShop(rawShop);
