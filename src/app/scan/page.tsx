@@ -17,21 +17,28 @@ export default function ScanPage() {
 
   const handleScan = useCallback(
     (text: string) => {
+      let token: string | null = null;
+
       try {
         const url = new URL(text);
-        const match = url.pathname.match(/(?:\/kyoto-local-stamprally)?\/stamp\/(.+)$/);
-        if (match) {
-          router.push(`/stamp/${match[1]}`);
-          return;
+        // New format: /stamp?token=xxx
+        const paramToken = url.searchParams.get("token");
+        if (paramToken) {
+          token = paramToken;
+        } else {
+          // Legacy format: /stamp/{token}
+          const match = url.pathname.match(/(?:\/kyoto-local-stamprally)?\/stamp\/(.+)$/);
+          if (match) token = match[1];
         }
-      } catch {}
+      } catch {
+        // Fallback: extract token from non-URL text
+        if (text.includes("/stamp/")) {
+          token = text.split("/stamp/").pop() || null;
+        }
+      }
 
-      if (text.includes("/stamp/")) {
-        const token = text.split("/stamp/").pop();
-        if (token) {
-          router.push(`/stamp/${token}`);
-          return;
-        }
+      if (token) {
+        router.push(`/stamp?token=${encodeURIComponent(token)}`);
       }
     },
     [router]

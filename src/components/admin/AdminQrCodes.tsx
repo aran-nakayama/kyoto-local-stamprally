@@ -20,7 +20,7 @@ export function AdminQrCodes() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {shops.map((shop) => (
-          <QrCard key={shop.id} name={shop.name} url={`${baseUrl}/stamp/${shop.stampToken}`} generateLabel={t.admin.generate} />
+          <QrCard key={shop.id} name={shop.name} url={`${baseUrl}/stamp?token=${encodeURIComponent(shop.stampToken)}`} generateLabel={t.admin.generate} />
         ))}
       </div>
     </div>

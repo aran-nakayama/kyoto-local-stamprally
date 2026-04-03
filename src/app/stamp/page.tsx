@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { findShopByToken } from "@/lib/stamps";
 import { useStamps } from "@/hooks/useStamps";
 import { useShops } from "@/hooks/useShops";
@@ -10,18 +10,20 @@ import { Shop } from "@/lib/types";
 
 type StampResult = "success" | "already" | "invalid";
 
-export function StampClient({ token }: { token: string }) {
+function StampContent() {
   const router = useRouter();
-  const { shops } = useShops();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") || "";
+  const { shops, isLoaded: shopsLoaded } = useShops();
   const { addStamp, hasStamp, isLoaded } = useStamps(shops);
   const { t } = useI18n();
   const [result, setResult] = useState<StampResult | null>(null);
   const [shop, setShop] = useState<Shop | null>(null);
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || !shopsLoaded || !token) return;
 
-    const found = findShopByToken(token);
+    const found = findShopByToken(token, shops);
     if (!found) {
       setResult("invalid");
       return;
@@ -35,7 +37,7 @@ export function StampClient({ token }: { token: string }) {
       addStamp(found.id);
       setResult("success");
     }
-  }, [token, isLoaded, addStamp, hasStamp]);
+  }, [token, isLoaded, shopsLoaded, shops, addStamp, hasStamp]);
 
   useEffect(() => {
     if (result === "success" || result === "already") {
@@ -98,5 +100,19 @@ export function StampClient({ token }: { token: string }) {
         <p className="text-sm text-muted">{t.stamp.redirecting}</p>
       </div>
     </div>
+  );
+}
+
+export default function StampPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+        </div>
+      }
+    >
+      <StampContent />
+    </Suspense>
   );
 }
